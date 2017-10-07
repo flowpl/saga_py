@@ -11,6 +11,6 @@ python:
   - "pypy3"
 
 install:
-  - pip install coverage, coveralls
+  - pip install coverage coveralls
 
 script: coverage run --branch -m unittest discover -s saga -p "*_test.py"
