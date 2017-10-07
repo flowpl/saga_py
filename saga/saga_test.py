@@ -8,7 +8,7 @@ class SagaTest(TestCase):
         action_call_count = 0
 
         def action():
-            global action_call_count
+            nonlocal action_call_count
             action_call_count += 1
             return None
 
@@ -23,7 +23,7 @@ class SagaTest(TestCase):
     def test_run_multiple_actions(self):
         action_call_count = 0
         def action():
-            global action_call_count
+            nonlocal action_call_count
             action_call_count += 1
         action1 = Mock(spec=Action)
         action1.act = action
@@ -57,7 +57,7 @@ class SagaTest(TestCase):
         action_call_count = 0
 
         def action():
-            global action_call_count
+            nonlocal action_call_count
             action_call_count += 1
 
         def action_raise(**kwargs):
@@ -114,7 +114,7 @@ class SagaTest(TestCase):
         action_call_count = 0
 
         def action():
-            global action_call_count
+            nonlocal action_call_count
             action_call_count += 1
 
         def ex_comp():
@@ -148,7 +148,7 @@ class SagaTest(TestCase):
         action_call_count = 0
 
         def action():
-            global action_call_count
+            nonlocal action_call_count
             action_call_count += 1
 
         def ex_comp():
@@ -196,12 +196,12 @@ class SagaBuilderTest(TestCase):
         compensation_count = 0
 
         def action():
-            global action_count
+            nonlocal action_count
             action_count += 1
             raise BaseException('test_build_saga_action')
 
         def compensation():
-            global compensation_count
+            nonlocal compensation_count
             compensation_count += 1
 
         with self.assertRaises(BaseException):
@@ -221,7 +221,7 @@ class SagaBuilderTest(TestCase):
             return action1_return_value
 
         def action2(**kwargs):
-            global action2_argument
+            nonlocal action2_argument
             action2_argument = kwargs
             return None
 
