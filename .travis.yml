@@ -8,4 +8,8 @@ python:
 install:
   - pip install coverage coveralls
 
-script: coverage run --branch -m unittest discover -s saga -p "*_test.py"
+script:
+  - coverage run --branch -m unittest discover -s saga -p "*_test.py"
+
+after_success:
+  - coveralls
