@@ -1,0 +1,16 @@
+CHANGES
+=======
+
+1.0
+---
+
+* fat: adds python packaging information
+* docs: switch readme from markdown to restructuredText and add a few code examples
+* fix: final polishing
+* feat: run coveralls after test
+* fix: who needs python 2 anyways
+* fix: change nonlocal keyword to global in tests to get python 3.2 and 2.x working
+* fix: syntax error in travis.yml
+* docs: adds travis and coveralls badges to README.md
+* feat: initial commit
+* Initial commit
