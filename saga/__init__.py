@@ -1,3 +1,3 @@
-from saga.saga import Action, Saga, SagaBuilder, SagaException
+from saga.saga import Action, Saga, SagaBuilder, SagaError
 
-__all__ = [Action, Saga, SagaBuilder, SagaException]
+__all__ = [Action, Saga, SagaBuilder, SagaError]

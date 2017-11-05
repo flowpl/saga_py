@@ -1,6 +1,6 @@
 
 
-class SagaException(BaseException):
+class SagaError(BaseException):
     """
     Raised when an action failed and at least one compensation also failed.
     """
@@ -24,8 +24,9 @@ class Action(object):
         :param action: Callable a function executed as the action
         :param compensation: Callable a function that reverses the effects of action
         """
-        self.action = action
-        self.compensation = compensation
+        self.__kwargs = None
+        self.__action = action
+        self.__compensation = compensation
 
     def act(self, **kwargs):
         """
@@ -35,15 +36,18 @@ class Action(object):
                             return values of the previous action
         :return: dict optional return value of this action
         """
-        return self.action(**kwargs)
+        self.__kwargs = kwargs
+        return self.__action(**kwargs)
 
     def compensate(self):
         """
         Execute the compensation.
-
         :return: None
         """
-        self.compensation()
+        if self.__kwargs:
+            self.__compensation(**self.__kwargs)
+        else:
+            self.__compensation()
 
 
 class Saga(object):
@@ -72,10 +76,7 @@ class Saga(object):
                 kwargs = self.__get_action(action_index).act(**kwargs) or {}
             except BaseException as e:
                 compensation_exceptions = self.__run_compensations(action_index)
-                if len(compensation_exceptions) > 0:
-                    raise SagaException(e, compensation_exceptions)
-                else:
-                    raise e
+                raise SagaError(e, compensation_exceptions)
 
             if type(kwargs) is not dict:
                 raise TypeError('action return type should be dict or None but is {}'.format(type(kwargs)))
@@ -126,7 +127,7 @@ class SagaBuilder(object):
         self.actions.append(action)
         return self
 
-    def build(self) -> Saga:
+    def build(self):
         """
         Returns a new Saga ready to execute all actions passed to the builder.
         :return: Saga

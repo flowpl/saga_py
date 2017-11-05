@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unittest.mock import Mock
-from saga import Saga, Action, SagaException, SagaBuilder
+from . import Saga, Action, SagaError, SagaBuilder
 
 
 class SagaTest(TestCase):
@@ -94,7 +94,7 @@ class SagaTest(TestCase):
         action.act = ex
         action.compensate = com_ex
 
-        with self.assertRaises(SagaException) as context:
+        with self.assertRaises(SagaError) as context:
             (Saga([action])).execute()
 
         self.assertIsInstance(context.exception.action, BaseException)
@@ -107,7 +107,7 @@ class SagaTest(TestCase):
         action1 = Mock(spec=Action)
         action1.act = action
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SagaError):
             (Saga([action1])).execute()
 
     def test_random_action_of_multiple_fails_and_random_compensation_fails(self):
@@ -132,7 +132,7 @@ class SagaTest(TestCase):
         action3.act = ex
         action4 = Mock(spec=Action)
 
-        with self.assertRaises(SagaException) as context:
+        with self.assertRaises(SagaError) as context:
             (Saga([action1, action2, action3, action4])).execute()
 
         self.assertEqual(action_call_count, 2)
@@ -168,7 +168,7 @@ class SagaTest(TestCase):
         action3.compensate = ex_comp
         action4 = Mock(spec=Action)
 
-        with self.assertRaises(SagaException) as context:
+        with self.assertRaises(SagaError) as context:
             (Saga([action1, action2, action3, action4])).execute()
 
         self.assertEqual(action_call_count, 2)
@@ -233,3 +233,30 @@ class SagaBuilderTest(TestCase):
             .build()
         saga.execute()
         self.assertDictEqual(action1_return_value, action2_argument)
+
+    def test_pass_return_value_to_next_compensation(self):
+        action1_return_value = {'return_value': 'some result'}
+        compensation2_argument = None
+
+        def action1(**kwargs):
+            return action1_return_value
+
+        def action2(**kwargs):
+            raise BaseException('fail test action2')
+
+        def compensation2(**kwargs):
+            nonlocal compensation2_argument
+            compensation2_argument = kwargs
+
+        compensation = Mock()
+        try:
+            saga = SagaBuilder \
+                .create() \
+                .action(action1, compensation) \
+                .action(action2, compensation2) \
+                .build()
+            saga.execute()
+        except SagaError:
+            pass
+
+        self.assertDictEqual(action1_return_value, compensation2_argument)
