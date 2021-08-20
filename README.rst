@@ -47,7 +47,6 @@ Simple example
         .create() \
         .action(lambda: incr_counter1(15), lambda: decr_counter1(15)) \
         .action(lambda: incr_counter2(1), lambda: decr_counter2(1)) \
-        .action() \
         .build() \
         .execute()
 
@@ -91,7 +90,6 @@ all Exceptions encountered during the run.
             .create() \
             .action(lambda: incr_counter1(15), lambda: decr_counter1(15)) \
             .action(lambda: incr_counter2(1), lambda: decr_counter2(1)) \
-            .action() \
             .build() \
             .execute()
     except SagaError as e:
@@ -136,7 +134,6 @@ all other compensations are run regardless.
             .create() \
             .action(lambda: incr_counter1(15), lambda: decr_counter1(15)) \
             .action(lambda: incr_counter2(1), lambda: decr_counter2(1)) \
-            .action() \
             .build() \
             .execute()
     except SagaError as e:
@@ -181,7 +178,6 @@ No values can be passed between compensations.
         .create() \
         .action(lambda: incr_counter1(15), lambda: decr_counter1(15)) \
         .action(incr_counter2, decr_counter2) \
-        .action() \
         .build() \
         .execute()
 
